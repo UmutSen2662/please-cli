@@ -1,2 +1,2 @@
 export { writeCommandToTemp, cleanupTempFile, getTempFilePath } from './execute';
-export { generateWrapperInstructions, autoInstallWrapper } from './wrapper';
+export { generateWrapperInstructions, autoInstallWrapper, autoUninstallWrapper } from './wrapper';

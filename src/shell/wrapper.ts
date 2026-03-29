@@ -161,3 +161,95 @@ export function autoInstallWrapper(devMode: boolean = false): boolean {
     return false;
   }
 }
+
+export function autoUninstallWrapper(): boolean {
+  try {
+    const shell = detectShell();
+    let removed = false;
+
+    if (shell === 'bash') {
+      const bashrc = join(homedir(), '.bashrc');
+      if (existsSync(bashrc)) {
+        const content = readFileSync(bashrc, 'utf-8');
+        if (content.includes('pls()')) {
+          const lines = content.split('\n');
+          const newLines: string[] = [];
+          let inWrapper = false;
+          for (const line of lines) {
+            if (line.includes('please-cli wrapper function')) {
+              inWrapper = true;
+              continue;
+            }
+            if (inWrapper && line.trim() === '}') {
+              inWrapper = false;
+              continue;
+            }
+            if (!inWrapper) {
+              newLines.push(line);
+            }
+          }
+          writeFileSync(bashrc, newLines.join('\n'), 'utf-8');
+          console.log(pc.green('✓ Wrapper removed from ~/.bashrc'));
+          removed = true;
+        }
+      }
+    } else if (shell === 'zsh') {
+      const zshrc = join(homedir(), '.zshrc');
+      if (existsSync(zshrc)) {
+        const content = readFileSync(zshrc, 'utf-8');
+        if (content.includes('pls()')) {
+          const lines = content.split('\n');
+          const newLines: string[] = [];
+          let inWrapper = false;
+          for (const line of lines) {
+            if (line.includes('please-cli wrapper function')) {
+              inWrapper = true;
+              continue;
+            }
+            if (inWrapper && line.trim() === '}') {
+              inWrapper = false;
+              continue;
+            }
+            if (!inWrapper) {
+              newLines.push(line);
+            }
+          }
+          writeFileSync(zshrc, newLines.join('\n'), 'utf-8');
+          console.log(pc.green('✓ Wrapper removed from ~/.zshrc'));
+          removed = true;
+        }
+      }
+    } else if (shell === 'powershell') {
+      const userHome = process.env.USERPROFILE || homedir();
+      const profileCandidates = [
+        join(userHome, 'Documents', 'PowerShell', 'Microsoft.PowerShell_profile.ps1'),
+        join(userHome, 'Documents', 'WindowsPowerShell', 'Microsoft.PowerShell_profile.ps1'),
+      ];
+
+      for (const profilePath of profileCandidates) {
+        if (existsSync(profilePath)) {
+          const content = readFileSync(profilePath, 'utf-8');
+          const blockRegex = new RegExp(
+            `${escapeRegExp(POWERSHELL_WRAPPER_START)}[\\s\\S]*?${escapeRegExp(POWERSHELL_WRAPPER_END)}`,
+            'm'
+          );
+
+          if (blockRegex.test(content)) {
+            const updated = content.replace(blockRegex, '');
+            writeFileSync(profilePath, updated, 'utf-8');
+            console.log(pc.green(`✓ Wrapper removed from ${profilePath}`));
+            removed = true;
+          }
+        }
+      }
+    }
+
+    if (!removed) {
+      console.log(pc.yellow('No wrapper found to remove.'));
+    }
+    return removed;
+  } catch (error) {
+    console.error(pc.red('Failed to remove wrapper:'), error);
+    return false;
+  }
+}

@@ -4,7 +4,7 @@ import type { CoreMessage } from 'ai';
 import { loadConfig, saveConfig, runOnboarding, getDefaultModel, type Provider } from './config';
 import { generateCommand, fetchModels, type ModelOption, type AIResponse } from './ai';
 import { displayResult, showActionMenu, getRefineInput, showCancellation, displayQuestion, getAnswerInput, type Action } from './ui';
-import { writeCommandToTemp, cleanupTempFile, generateWrapperInstructions, autoInstallWrapper } from './shell';
+import { writeCommandToTemp, cleanupTempFile, generateWrapperInstructions, autoInstallWrapper, autoUninstallWrapper } from './shell';
 
 export async function main(): Promise<void> {
   // Parse CLI arguments
@@ -13,6 +13,7 @@ export async function main(): Promise<void> {
     help: args.includes('--help') || args.includes('-h'),
     setup: args.includes('--setup'),
     install: args.includes('--install'),
+    uninstall: args.includes('--uninstall'),
     dev: args.includes('--dev'),
     changeModel: args.includes('--model'),
   };
@@ -44,6 +45,7 @@ Flags:
   -h, --help                 Display this menu and exit
       --setup                Run configuration setup
       --install              Install shell wrapper
+      --uninstall            Remove shell wrapper
       --install --dev        Install shell wrapper in dev mode (uses bun + source path)
       --model [name]         Change the model (prompts if no name given)
 `);
@@ -153,6 +155,14 @@ Flags:
     if (!installed) {
       generateWrapperInstructions(flags.dev);
     }
+    outro('Done!');
+    return;
+  }
+
+  // Handle uninstall flag
+  if (flags.uninstall) {
+    intro(pc.cyan('please-cli'));
+    autoUninstallWrapper();
     outro('Done!');
     return;
   }
