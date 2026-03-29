@@ -18,7 +18,7 @@ function escapeRegExp(value: string): string {
 function getBashWrapper(devMode: boolean): string {
   const cliCmd = devMode
     ? `bun run "${process.cwd()}/src/cli.ts"`
-    : 'pls';
+    : 'command pls';
 
   return `# please-cli wrapper function (${devMode ? 'dev mode' : 'npm install'})
 pls() {
@@ -48,7 +48,7 @@ function getPowerShellWrapper(devMode: boolean): string {
   const callCmd = devMode
     ? `$ASK_CLI_PATH = "${devPath}"
   bun run "$ASK_CLI_PATH" @args`
-    : 'pls @args';
+    : '& (Get-Command pls -CommandType Application) @args';
 
   return `# please-cli wrapper function (${devMode ? 'dev mode' : 'npm install'})
 function pls {
