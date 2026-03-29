@@ -139,7 +139,7 @@ Flags:
       await runOnboarding();
       outro('Setup complete!');
     } catch (error) {
-      console.error('Setup failed:', error);
+      log.error(`Setup failed: ${error}`);
       process.exit(1);
     }
     return;
@@ -256,10 +256,10 @@ Flags:
             process.exit(0);
           } else {
             // Running directly - show command for manual execution
-            console.log('\n' + pc.cyan('Generated command:'));
-            console.log(pc.yellow(result.command) + '\n');
-            console.log(pc.gray('Tip: Install the shell wrapper to execute commands automatically:'));
-            console.log(pc.gray('  bun run install-wrapper\n'));
+            log.message('\n' + pc.cyan('Generated command:'));
+            log.message(pc.yellow(result.command));
+            log.info(pc.gray('Tip: Install the shell wrapper to execute commands automatically:'));
+            log.info(pc.gray('  pls --install'));
             outro('Done!');
             process.exit(0);
           }

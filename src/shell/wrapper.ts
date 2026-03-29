@@ -1,6 +1,7 @@
 import { homedir } from 'os';
 import { dirname, join } from 'path';
 import { existsSync, readFileSync, appendFileSync, mkdirSync, writeFileSync } from 'fs';
+import { log } from '@clack/prompts';
 import pc from 'picocolors';
 
 const POWERSHELL_WRAPPER_START = '# >>> please-cli wrapper >>>';
@@ -80,22 +81,22 @@ function detectShell(): 'bash' | 'zsh' | 'powershell' | 'unknown' {
 export function generateWrapperInstructions(devMode: boolean = false): void {
   const shell = detectShell();
 
-  console.log(pc.cyan('\n=== please-cli Setup ===\n'));
-  console.log('Add the following function to your shell config file:\n');
+  log.message(pc.cyan('=== please-cli Setup ==='));
+  log.info('Add the following function to your shell config file:');
 
   if (shell === 'powershell' || process.platform === 'win32') {
-    console.log(pc.yellow('For PowerShell, add to your $PROFILE:\n'));
+    log.info(pc.yellow('For PowerShell, add to your $PROFILE:'));
     console.log(getPowerShellWrapper(devMode));
-    console.log(pc.gray('Note: You may need to run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser\n'));
+    log.info(pc.gray('Note: You may need to run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser'));
   } else {
-    console.log(pc.yellow('For Bash (~/.bashrc) or Zsh (~/.zshrc):\n'));
+    log.info(pc.yellow('For Bash (~/.bashrc) or Zsh (~/.zshrc):'));
     console.log(getBashWrapper(devMode));
   }
 
-  console.log(pc.cyan('After adding, reload your shell config:'));
-  console.log(pc.gray('  source ~/.bashrc  # or'));
-  console.log(pc.gray('  source ~/.zshrc   # or'));
-  console.log(pc.gray('  . $PROFILE        # for PowerShell\n'));
+  log.info(pc.cyan('After adding, reload your shell config:'));
+  log.info(pc.gray('  source ~/.bashrc  # or'));
+  log.info(pc.gray('  source ~/.zshrc   # or'));
+  log.info(pc.gray('  . $PROFILE        # for PowerShell'));
 }
 
 export function autoInstallWrapper(devMode: boolean = false): boolean {
@@ -108,7 +109,7 @@ export function autoInstallWrapper(devMode: boolean = false): boolean {
         const content = readFileSync(bashrc, 'utf-8');
         if (!content.includes('pls()')) {
           appendFileSync(bashrc, '\n' + getBashWrapper(devMode));
-          console.log(pc.green('✓ Wrapper installed to ~/.bashrc'));
+          log.success(pc.green('Wrapper installed to ~/.bashrc'));
           return true;
         }
       }
@@ -118,7 +119,7 @@ export function autoInstallWrapper(devMode: boolean = false): boolean {
         const content = readFileSync(zshrc, 'utf-8');
         if (!content.includes('pls()')) {
           appendFileSync(zshrc, '\n' + getBashWrapper(devMode));
-          console.log(pc.green('✓ Wrapper installed to ~/.zshrc'));
+          log.success(pc.green('Wrapper installed to ~/.zshrc'));
           return true;
         }
       }
@@ -146,10 +147,10 @@ export function autoInstallWrapper(devMode: boolean = false): boolean {
       if (blockRegex.test(content)) {
         const updated = content.replace(blockRegex, managedBlock);
         writeFileSync(profilePath, updated, 'utf-8');
-        console.log(pc.green(`✓ Wrapper updated in ${profilePath}`));
+        log.success(pc.green(`Wrapper updated in ${profilePath}`));
       } else {
         appendFileSync(profilePath, `\n${managedBlock}\n`);
-        console.log(pc.green(`✓ Wrapper installed to ${profilePath}`));
+        log.success(pc.green(`Wrapper installed to ${profilePath}`));
       }
 
       return true;
@@ -157,7 +158,7 @@ export function autoInstallWrapper(devMode: boolean = false): boolean {
 
     return false;
   } catch (error) {
-    console.error(pc.red('Failed to auto-install wrapper:'), error);
+    log.error(pc.red(`Failed to auto-install wrapper: ${error}`));
     return false;
   }
 }
@@ -189,7 +190,7 @@ export function autoUninstallWrapper(): boolean {
             }
           }
           writeFileSync(bashrc, newLines.join('\n'), 'utf-8');
-          console.log(pc.green('✓ Wrapper removed from ~/.bashrc'));
+          log.success(pc.green('Wrapper removed from ~/.bashrc'));
           removed = true;
         }
       }
@@ -215,7 +216,7 @@ export function autoUninstallWrapper(): boolean {
             }
           }
           writeFileSync(zshrc, newLines.join('\n'), 'utf-8');
-          console.log(pc.green('✓ Wrapper removed from ~/.zshrc'));
+          log.success(pc.green('Wrapper removed from ~/.zshrc'));
           removed = true;
         }
       }
@@ -237,7 +238,7 @@ export function autoUninstallWrapper(): boolean {
           if (blockRegex.test(content)) {
             const updated = content.replace(blockRegex, '');
             writeFileSync(profilePath, updated, 'utf-8');
-            console.log(pc.green(`✓ Wrapper removed from ${profilePath}`));
+            log.success(pc.green(`Wrapper removed from ${profilePath}`));
             removed = true;
           }
         }
@@ -245,11 +246,11 @@ export function autoUninstallWrapper(): boolean {
     }
 
     if (!removed) {
-      console.log(pc.yellow('No wrapper found to remove.'));
+      log.warn(pc.yellow('No wrapper found to remove.'));
     }
     return removed;
   } catch (error) {
-    console.error(pc.red('Failed to remove wrapper:'), error);
+    log.error(pc.red(`Failed to remove wrapper: ${error}`));
     return false;
   }
 }

@@ -25,7 +25,7 @@ bun install
 ### 2. First-time setup
 
 ```bash
-bun run src/index.ts --setup
+bun run dev --setup
 ```
 
 This will prompt you to:
@@ -38,11 +38,11 @@ This will prompt you to:
 ```bash
 # Build install
 # Points to the built CLI
-bun run src/cli.ts --install
+bun run dev --install
 
 # Dev mode install
 # Points to the dev CLI
-bun run src/cli.ts --install --dev
+bun run dev --install --dev
 ```
 
 After installing, reload your shell to activate the wrapper:
@@ -75,6 +75,7 @@ Options:
   -h, --help                 Show help
       --setup                Run configuration setup
       --install              Install shell wrapper
+      --uninstall            Remove shell wrapper
       --install --dev        Install wrapper in dev mode
       --model [name]         Change the model (prompts if no name given)
 

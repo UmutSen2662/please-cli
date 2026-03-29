@@ -1,6 +1,6 @@
 {
   "name": "please-cli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "AI-powered shell command assistant",
   "type": "module",
   "main": "dist/cli.js",
