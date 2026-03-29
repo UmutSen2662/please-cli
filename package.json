@@ -1,0 +1,59 @@
+{
+  "name": "please-cli",
+  "version": "0.1.1",
+  "description": "AI-powered shell command assistant",
+  "type": "module",
+  "main": "dist/cli.js",
+  "module": "dist/cli.js",
+  "bin": {
+    "pls": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "dev": "bun run src/cli.ts",
+    "build": "bun build src/cli.ts --outdir=dist --target=bun",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "shell",
+    "terminal",
+    "assistant",
+    "command-line",
+    "natural-language",
+    "gemini",
+    "openai",
+    "ollama"
+  ],
+  "author": "Umut Şen",
+  "license": "MIT",
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.0.0",
+    "@ai-sdk/openai": "^1.0.0",
+    "@clack/prompts": "^0.9.0",
+    "@google/generative-ai": "^0.24.1",
+    "ai": "^4.0.0",
+    "marked": "^15.0.0",
+    "marked-terminal": "^7.0.0",
+    "ollama": "^0.6.3",
+    "openai": "^6.33.0",
+    "picocolors": "^1.1.0",
+    "wrap-ansi": "^10.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
