@@ -52,13 +52,14 @@ function getModel(config: Config) {
 }
 
 function detectRuntimeShell(): RuntimeShell {
-  if (process.platform === 'win32' || process.env.PSModulePath || process.env.ASK_CLI_WRAPPER) {
+  if (process.platform === 'win32') {
     return 'powershell';
   }
 
   const shell = (process.env.SHELL || '').toLowerCase();
   if (shell.includes('zsh')) return 'zsh';
   if (shell.includes('bash')) return 'bash';
+  if (shell.includes('pwsh') || shell.includes('powershell')) return 'powershell';
   return 'unknown';
 }
 

@@ -24,6 +24,8 @@ function getBashWrapper(devMode: boolean): string {
   return `# please-cli wrapper function (${devMode ? 'dev mode' : 'npm install'})
 pls() {
   export ASK_CLI_WRAPPER=1
+  # Add pls command to history using fc
+  fc -s "pls $*" 2>/dev/null || history -s "pls $*" 2>/dev/null
   ${cliCmd} "$@"
   
   if [[ -f ~/.ai_cmd_temp ]]; then
@@ -74,7 +76,11 @@ function detectShell(): 'bash' | 'zsh' | 'powershell' | 'unknown' {
   const shell = process.env.SHELL || '';
   if (shell.includes('zsh')) return 'zsh';
   if (shell.includes('bash')) return 'bash';
-  if (process.platform === 'win32' || process.env.PSModulePath) return 'powershell';
+  if (process.platform === 'win32') return 'powershell';
+  
+  // Check for PowerShell on Linux/WSL by examining the shell path
+  if (shell.includes('pwsh') || shell.includes('powershell')) return 'powershell';
+  
   return 'unknown';
 }
 
